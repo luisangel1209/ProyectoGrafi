@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 public class script_personaje : MonoBehaviour
@@ -31,5 +32,8 @@ public class script_personaje : MonoBehaviour
         if (Input.GetButtonDown("Jump") && enPiso){
             rb.AddForce(new Vector2(0, fuerzaSalto), ForceMode2D.Impulse);
         }
+        if (movX < 0) transform.localScale = new Vector3(-1, 1, 1);
+        if (movX > 0) transform.localScale = new Vector3(1, 1, 1);
+
     }
 }
