@@ -12,6 +12,10 @@ public class script_personaje : MonoBehaviour
     public Transform refPie;
     public float velX = 70f;
     // Start is called before the first frame update
+
+    public Transform contArma;
+    public bool tieneArma;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -36,4 +40,15 @@ public class script_personaje : MonoBehaviour
         if (movX > 0) transform.localScale = new Vector3(1, 1, 1);
 
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("arma"))
+        {
+            tieneArma = true;
+            Destroy(collision.gameObject);
+            contArma.gameObject.SetActive(true);
+        }
+    }
+
 }
