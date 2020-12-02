@@ -45,7 +45,7 @@ public class script_personaje : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("arma"))
         {
-            tieneArma = true;
+            tieneArma = false;
             Destroy(collision.gameObject);
             contArma.gameObject.SetActive(true);
         }
