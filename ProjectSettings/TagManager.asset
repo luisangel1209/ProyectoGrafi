@@ -6,6 +6,7 @@ TagManager:
   tags:
   - arma
   - zombie
+  - cabezazombie
   layers:
   - Default
   - TransparentFX

@@ -20,7 +20,7 @@ public class script_personaje : MonoBehaviour
 
     public Transform RefOjos;
     public Transform cabeza;
-    public float magnitudPateoArma = 200f;
+    public float magnitudPateoArma = 100f;
     public Transform refPuntaArma;
     public GameObject particulasArma;
 
@@ -28,8 +28,9 @@ public class script_personaje : MonoBehaviour
     public Transform camaraASacudir;
     float magnitudSacudida;
 
-    public float magnitudReaccionDisparo = 200f;
+    public float magnitudReaccionDisparo = 100f;
     public GameObject particulasSangreVerde;
+    public GameObject particulasMuchaSangreVerde;
 
     void Start()
     {
@@ -100,6 +101,11 @@ public class script_personaje : MonoBehaviour
 
                 //particulas sangre
                 Instantiate(particulasSangreVerde, hit.point, Quaternion.identity);
+            }
+            if (hit.collider.gameObject.CompareTag("cabezazombie"))
+            {
+                hit.transform.GetComponent<script_zombie>().muere(direccion);
+                Instantiate(particulasMuchaSangreVerde, hit.point, Quaternion.identity);
             }
         }
     }
