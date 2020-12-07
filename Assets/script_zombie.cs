@@ -61,6 +61,8 @@ public class script_zombie : MonoBehaviour
                     if (transform.position.x < limiteCaminataIzq) direccion = 1;
                     if (transform.position.x > limiteCaminataDer) direccion = -1;
 
+                    anim.speed = 1f;
+
                     if (distanciaConPersonaje < entradaZonaPersecución) comportamiento = tipoComportamientoZombie.persecución;
                 }
                 break;
@@ -79,10 +81,35 @@ public class script_zombie : MonoBehaviour
 
                     if (distanciaConPersonaje > salidaZonaPersecución) comportamiento = tipoComportamientoZombie.pasivo;
 
+                    if (distanciaConPersonaje < distanciaAtaque) comportamiento = tipoComportamientoZombie.ataque;
+                }
+                break;
+
+            case tipoComportamientoZombie.ataque:
+                //ataque
+                if (rb.velocity.magnitude < umbralVelocidad)
+                {
+                    anim.SetTrigger("Atacar");
+                    //girarse posicion personaje
+                    if (Personaje.position.x > transform.position.x) direccion = 1;
+                    if (Personaje.position.x < transform.position.x) direccion = -1;
+
+                    anim.speed = 1f;
+                    
+                    //volver zona persecucion
+                    if (distanciaConPersonaje > distanciaAtaque) comportamiento = tipoComportamientoZombie.persecución;
                 }
                 break;
         }
         transform.localScale = new Vector3(escalaOriginal.x * direccion, escalaOriginal.y, escalaOriginal.z);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Player") && comportamiento == tipoComportamientoZombie.ataque)
+        {
+            Destroy(collision.gameObject);
+        }
     }
 
     public void muere(Vector3 direccion)
