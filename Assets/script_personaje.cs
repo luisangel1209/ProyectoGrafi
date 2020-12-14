@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class script_personaje : MonoBehaviour
 {
@@ -32,10 +33,21 @@ public class script_personaje : MonoBehaviour
     public GameObject particulasSangreVerde;
     public GameObject particulasMuchaSangreVerde;
 
+    public GameObject particulasSangrePersonaje;
+
+    public UnityEngine.UI.Image mascaraDaño;
+
+    //energia
+    int energiaMax = 5;
+    int energiaActual = 0;
+    
+    public TMPro.TextMeshProUGUI TextoVida;
+
     void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        energiaActual = energiaMax;
     }
 
     // Update is called once per frame
@@ -149,5 +161,39 @@ public class script_personaje : MonoBehaviour
                 );
             magnitudSacudida *= .9f;
         }
+        actualizarDisplay();
+    }
+
+    void actualizarDisplay(){
+        //mascara roja
+        float valorAlfa = 1 / (float) energiaMax * (energiaMax - energiaActual);
+        mascaraDaño.color = new Color(1, 1, 1, valorAlfa);
+
+        //vida
+        TextoVida.text = energiaActual.ToString();
+    }
+
+    public void RecibirMordida(Vector2 posicion){
+        //reducir energia
+        energiaActual -= 1;
+
+        if(energiaActual <= 0){
+            Debug.Log("muerto");
+            actualizarDisplay();
+            Destroy(gameObject);
+        }else{
+
+        Debug.Log("auch! ahora tengo " + energiaActual + " de " + energiaMax);
+
+        //Particulas de sangre
+        Instantiate (particulasSangrePersonaje, posicion, Quaternion.identity);
+
+        //disparar animacion
+        anim.SetTrigger("auch");
+
+        
+        
+        }
+
     }
 }

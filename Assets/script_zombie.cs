@@ -33,6 +33,8 @@ public class script_zombie : MonoBehaviour
 
     Animator anim;
 
+    bool mordidaEsValida = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -97,18 +99,22 @@ public class script_zombie : MonoBehaviour
                     anim.speed = 1f;
                     
                     //volver zona persecucion
-                    if (distanciaConPersonaje > distanciaAtaque) comportamiento = tipoComportamientoZombie.persecución;
+                    if (distanciaConPersonaje > distanciaAtaque) {
+                    comportamiento = tipoComportamientoZombie.persecución;
+                    anim.ResetTrigger("Atacar");
+                }
                 }
                 break;
         }
         transform.localScale = new Vector3(escalaOriginal.x * direccion, escalaOriginal.y, escalaOriginal.z);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Player") && comportamiento == tipoComportamientoZombie.ataque)
+        if(collision.gameObject.CompareTag("Player") && mordidaEsValida)
         {
-            Destroy(collision.gameObject);
+            mordidaEsValida = false;
+            Personaje.GetComponent<script_personaje>().RecibirMordida(collision.contacts[0].point);
         }
     }
 
@@ -122,5 +128,13 @@ public class script_zombie : MonoBehaviour
         instMuerto.transform.GetChild(1).GetComponent<Rigidbody2D>().AddTorque(-10f, ForceMode2D.Impulse);
 
         Destroy(gameObject);
+    }
+
+    public void mordidaValida_inicio(){
+        mordidaEsValida = true;
+    }
+
+    public void mordidaValida_fin(){
+        mordidaEsValida = false;
     }
 }
