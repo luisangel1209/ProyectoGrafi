@@ -51,6 +51,7 @@ public class script_zombie : MonoBehaviour
     void Update()
     {
         distanciaConPersonaje = Mathf.Abs(Personaje.position.x - transform.position.x);
+        bool pocaDistanciaVertical = Mathf.Abs(Personaje.position.y - transform.position.y) < 15f;
         switch (comportamiento)
         {
             case tipoComportamientoZombie.pasivo:
@@ -65,7 +66,8 @@ public class script_zombie : MonoBehaviour
 
                     anim.speed = 1f;
 
-                    if (distanciaConPersonaje < entradaZonaPersecución) comportamiento = tipoComportamientoZombie.persecución;
+                    
+                    if (distanciaConPersonaje < entradaZonaPersecución && pocaDistanciaVertical) comportamiento = tipoComportamientoZombie.persecución;
                 }
                 break;
 
@@ -81,7 +83,7 @@ public class script_zombie : MonoBehaviour
 
                     anim.speed = 1.5f;
 
-                    if (distanciaConPersonaje > salidaZonaPersecución) comportamiento = tipoComportamientoZombie.pasivo;
+                    if (distanciaConPersonaje > salidaZonaPersecución || !pocaDistanciaVertical) comportamiento = tipoComportamientoZombie.pasivo;
 
                     if (distanciaConPersonaje < distanciaAtaque) comportamiento = tipoComportamientoZombie.ataque;
                 }

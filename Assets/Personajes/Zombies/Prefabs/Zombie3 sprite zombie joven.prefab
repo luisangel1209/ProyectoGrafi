@@ -31,6 +31,7 @@ Transform:
   - {fileID: 3148397369630721384}
   - {fileID: 3148397370177083737}
   - {fileID: 3148397371489661592}
+  - {fileID: 6540615904859765237}
   m_Father: {fileID: 3148397369727565444}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -390,6 +391,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velCaminata: 40
+  umbralVelocidad: 0
+  prefabMuerto: {fileID: 0}
+  magnitudVueloCabeza: 200
+  Personaje: {fileID: 0}
 --- !u!58 &3148397369727565468
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -403,9 +408,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.4092636, y: -0.70413995}
+  m_Offset: {x: -0.8273326, y: -0.70414096}
   serializedVersion: 2
-  m_Radius: 17.631706
+  m_Radius: 7.6061034
 --- !u!1 &3148397369799460904
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,3 +1389,33 @@ MonoBehaviour:
     - {x: 0, y: 0, z: 0, w: 0}
     - {x: 0, y: 0, z: 0, w: 0}
   m_Flip: 0
+--- !u!1 &6124918864295827157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6540615904859765237}
+  m_Layer: 0
+  m_Name: rePiso
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6540615904859765237
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6124918864295827157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3148397369476111483}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

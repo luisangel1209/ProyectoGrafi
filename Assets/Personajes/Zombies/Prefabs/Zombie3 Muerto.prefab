@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2623552669026621819}
   - component: {fileID: 2200072795761833770}
   - component: {fileID: 9129215620751074385}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie3Cabeza
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7426247506391851958}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie3 Muerto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 7607653884236228594}
   - component: {fileID: 8256156512394990211}
   - component: {fileID: 1456697803449754988}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie3Cuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

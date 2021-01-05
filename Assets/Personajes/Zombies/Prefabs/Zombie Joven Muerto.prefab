@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3240492565054444725}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie Joven Muerto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 4505004532216642677}
   - component: {fileID: 7146045031874588847}
   - component: {fileID: 4622923750009982797}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie1Cabeza
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 8456899611660906344}
   - component: {fileID: 7278116871270043209}
   - component: {fileID: 3139334368646715724}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie1Cuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

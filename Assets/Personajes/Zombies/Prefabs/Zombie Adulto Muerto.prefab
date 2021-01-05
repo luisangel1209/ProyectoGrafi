@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5774730296965930937}
   - component: {fileID: 2078674746136165909}
   - component: {fileID: 6403491124265595701}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie2Cabeza
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1212763459624347499}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie Adulto Muerto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 7105580193987393133}
   - component: {fileID: 6740102609571977587}
   - component: {fileID: 7177298103492470937}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Zombie2Cuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
