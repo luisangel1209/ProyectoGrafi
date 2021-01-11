@@ -35,6 +35,8 @@ public class script_zombie : MonoBehaviour
 
     bool mordidaEsValida = false;
 
+    public bool vivo = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,7 +51,8 @@ public class script_zombie : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
+        if(vivo == false) return;
         distanciaConPersonaje = Mathf.Abs(Personaje.position.x - transform.position.x);
         bool pocaDistanciaVertical = Mathf.Abs(Personaje.position.y - transform.position.y) < 15f;
         switch (comportamiento)
@@ -113,6 +116,7 @@ public class script_zombie : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        if(vivo == false) return;
         if(collision.gameObject.CompareTag("Player") && mordidaEsValida)
         {
             mordidaEsValida = false;
@@ -129,7 +133,10 @@ public class script_zombie : MonoBehaviour
         instMuerto.transform.GetChild(0).GetComponent<Rigidbody2D>().AddTorque(10f, ForceMode2D.Impulse);
         instMuerto.transform.GetChild(1).GetComponent<Rigidbody2D>().AddTorque(-10f, ForceMode2D.Impulse);
 
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        //gameObject.SetActive(false);
+        gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        vivo = false;
     }
 
     public void mordidaValida_inicio(){

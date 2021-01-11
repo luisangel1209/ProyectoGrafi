@@ -17,11 +17,14 @@ public class script_personaje : MonoBehaviour
 
     public Transform contArma;
     public bool tieneArma;
+
     public Transform mira;
     public Transform RefManoArma;
 
     public Transform RefOjos;
     public Transform cabeza;
+    bool miraValida;
+
     public float magnitudPateoArma = 100f;
     public Transform refPuntaArma;
     public GameObject particulasArma;
@@ -37,14 +40,18 @@ public class script_personaje : MonoBehaviour
     public GameObject particulasSangrePersonaje;
 
     public UnityEngine.UI.Image mascaraDaño;
-    public UnityEngine.UI.Image telaNegra;
-    float valorAlfaDeseadoTelaNegra;
 
     //energia
     int energiaMax = 5;
-    int energiaActual = 0;
-    
+    public int energiaActual;
     public TMPro.TextMeshProUGUI TextoVida;
+
+    //muerte
+    public UnityEngine.UI.Image telaNegra;
+    float valorAlfaDeseadoTelaNegra;
+
+    public TMPro.TextMeshProUGUI textoContBalas;
+    int cantBalas = 0;
 
     void Start()
     {
@@ -55,6 +62,8 @@ public class script_personaje : MonoBehaviour
         //fade in incial 
         telaNegra.color = new Color(0, 0, 0, 1); //negro
         valorAlfaDeseadoTelaNegra = 0; //Transparente
+
+        if(infoPartida.hayPartidaGuardada) cargarPartida();
     }
 
     // Update is called once per frame
@@ -90,15 +99,94 @@ public class script_personaje : MonoBehaviour
                 Input.mousePosition.y,
                 -Camera.main.transform.position.z
                 ));
-            RefManoArma.position = mira.position;
 
-            if (Input.GetButtonDown("Fire1")) disparar();
+            Vector3 distancia = transform.position - mira.position; //calculo distancia
+            miraValida = (distancia.magnitude > 10f);
 
+            mira.gameObject.SetActive(miraValida);
+
+            if (Input.GetButtonDown("Fire1") && miraValida){
+                if(cantBalas > 0) disparar();
+                else{
+                    //avisar que no tiene balas
+                    textoContBalas.color = Color.red;
+                    textoContBalas.fontSize = 50;
+                }
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.P)) anim.SetTrigger("muere"); ;
-        if (Input.GetKeyDown(KeyCode.O)) valorAlfaDeseadoTelaNegra = 0;
+        if (Input.GetKeyDown(KeyCode.P)) cargarPartida(); 
+        if (Input.GetKeyDown(KeyCode.O)) guardarPartida();
 
+        //cantidad de balas
+        textoContBalas.text = cantBalas.ToString();
+    }
+
+    void guardarPartida(){
+        infoPartida.infoPersonaje.cantBalas = cantBalas;
+        infoPartida.infoPersonaje.energiaActual = energiaActual;
+        infoPartida.infoPersonaje.posicion = transform.position;
+
+        infoPartida.hayPartidaGuardada = true;
+
+        //guardar el estado de cada paquete de balas en la lista llamada infoPaqueteBalas
+        infoPartida.infoPaqueteBalas.Clear();
+        Transform todosLosPaquetes = GameObject.Find("paquetes balas").transform;
+        foreach (Transform paq in todosLosPaquetes){
+            infoPartida.TipoInfoPaqueteBalas itemPaq = new infoPartida.TipoInfoPaqueteBalas{
+                activo = paq.gameObject.activeSelf
+            };
+            infoPartida.infoPaqueteBalas.Add(itemPaq);
+        }
+
+        //guardar el estado de cada zombie
+        infoPartida.infoZombies.Clear();
+        Transform todosLosZombies = GameObject.Find("Zombies").transform;
+        foreach (Transform zombie in todosLosZombies){
+            infoPartida.TipoInfoZombies itemZombie = new infoPartida.TipoInfoZombies{
+                activo = zombie.gameObject.activeSelf,
+                posicion = zombie.position
+            };
+            infoPartida.infoZombies.Add(itemZombie);
+        }
+    }
+    
+    void cargarPartida(){
+        cantBalas = infoPartida.infoPersonaje.cantBalas;
+        energiaActual = infoPartida.infoPersonaje.energiaActual;
+        transform.position = infoPartida.infoPersonaje.posicion;
+
+        //cargar el estado de cada paquete de balas en la lista llamada infoPaqueteBalas
+        Transform todosLosPaquetes = GameObject.Find("paquetes balas").transform;
+        int i = 0;
+        foreach (Transform paq in todosLosPaquetes){
+            paq.gameObject.SetActive(infoPartida.infoPaqueteBalas[i++].activo);
+        }
+        //cargar el estado de cada zombie
+        Transform todosLosZombies = GameObject.Find("Zombies").transform;
+        i = 0;
+        foreach (Transform zombie in todosLosZombies){
+            //zombie.gameObject.SetActive(infoPartida.infoZombies[i++].activo);
+
+            zombie.GetComponent<SpriteRenderer>().enabled = infoPartida.infoZombies[i].activo;
+            zombie.GetComponent<script_zombie>().vivo = infoPartida.infoZombies[i].activo;
+
+            zombie.position = infoPartida.infoZombies[i].posicion;
+            i++;
+        }
+    }
+
+    private void LateUpdate(){
+        if (energiaActual <= 0) return;
+        if (tieneArma && miraValida){
+            //gire cabeza para mirar el mouse
+            cabeza.up = RefOjos.position - mira.position;
+
+            //arma mire al mouse
+            contArma.up = contArma.position - mira.position;
+
+            RefManoArma.position = mira.position;
+        }
     }
 
     void disparar()
@@ -112,14 +200,16 @@ public class script_personaje : MonoBehaviour
         Instantiate(particulasArma, refPuntaArma.position, Quaternion.identity);
 
         //Sacudir cámara
-        sacudirCamara(.3f);
+        sacudirCamara(.5f);
 
         RaycastHit2D hit = Physics2D.Raycast(contArma.position, direccion, 10000f, ~(1 << 10));
         if (hit.collider != null)
-        {
+        {   
+            //le dio a algo
             if (hit.collider.gameObject.CompareTag("zombie"))
             {
                 //Destroy(hit.collider.gameObject);
+                //le dio al cuerpo de un zombie
                 hit.rigidbody.AddForce(magnitudReaccionDisparo * direccion, ForceMode2D.Impulse);
 
                 //particulas sangre
@@ -127,24 +217,18 @@ public class script_personaje : MonoBehaviour
             }
             if (hit.collider.gameObject.CompareTag("cabezazombie"))
             {
-                hit.transform.GetComponent<script_zombie>().muere(direccion);
-                Instantiate(particulasMuchaSangreVerde, hit.point, Quaternion.identity);
+                if(hit.transform.GetComponent<script_zombie>().vivo){
+                    //le dio en la cabeza a un zombie
+                    hit.transform.GetComponent<script_zombie>().muere(direccion);
+                    Instantiate(particulasMuchaSangreVerde, hit.point, Quaternion.identity);
+                }
             }
         }
+        //restar municion
+        cantBalas -= 1;
     }
 
-    private void LateUpdate()
-    {
-        if (energiaActual <= 0) return;
-        if (tieneArma)
-        {
-            //gire cabeza para mirar el mouse
-            cabeza.up = RefOjos.position - mira.position;
-
-            //arma mire al mouse
-            contArma.up = contArma.position - mira.position;
-        }
-    }
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -153,6 +237,20 @@ public class script_personaje : MonoBehaviour
             tieneArma = true;
             Destroy(collision.gameObject);
             contArma.gameObject.SetActive(true);
+            cantBalas +=5;
+            textoContBalas.color = Color.green;
+            textoContBalas.fontSize = 50;
+        }
+        if(collision.gameObject.CompareTag("balas")){
+            //Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
+            cantBalas +=5;
+            textoContBalas.color = Color.green;
+            textoContBalas.fontSize = 50;
+        }
+        if(collision.gameObject.CompareTag("checkpoint")){
+            guardarPartida();
+            Destroy(collision.gameObject);
         }
     }
 
@@ -178,6 +276,13 @@ public class script_personaje : MonoBehaviour
         //manejar la tela negra
         float valorAlfa = Mathf.Lerp(telaNegra.color.a, valorAlfaDeseadoTelaNegra, .05f);
         telaNegra.color = new Color(0, 0, 0, valorAlfa);
+
+        //Reinicar escena cuando se complete el fadeout
+        if (valorAlfa > 0.9f && valorAlfaDeseadoTelaNegra == 1) SceneManager.LoadScene("SampleScene");
+
+        //vuelve el contador de balas a su estilo normal
+        textoContBalas.color = Color.Lerp(textoContBalas.color, Color.white, .1f);
+        textoContBalas.fontSize = Mathf.Lerp(textoContBalas.fontSize, 36, .1f);
     }
 
     void actualizarDisplay(){
@@ -185,8 +290,6 @@ public class script_personaje : MonoBehaviour
         float valorAlfa = 1 / (float) energiaMax * (energiaMax - energiaActual);
         mascaraDaño.color = new Color(1, 1, 1, valorAlfa);
 
-        //Reinicar escena cuando se complete el fadeout
-        if (valorAlfa > 0.9f && valorAlfaDeseadoTelaNegra == 1) SceneManager.LoadScene("SampleScene");
 
         //vida
         TextoVida.text = energiaActual.ToString();
