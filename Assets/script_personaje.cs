@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿
+
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
@@ -53,6 +56,12 @@ public class script_personaje : MonoBehaviour
     public TMPro.TextMeshProUGUI textoContBalas;
     int cantBalas = 0;
 
+    //cambiuo de escenas 
+    int cuantosZombiesQuedan;
+    public GameObject textoFinal;
+    float momInicioFadeOut = float.MaxValue;
+    int escenaACargarDespuesDelFadeOut;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -64,6 +73,9 @@ public class script_personaje : MonoBehaviour
         valorAlfaDeseadoTelaNegra = 0; //Transparente
 
         if(infoPartida.hayPartidaGuardada) cargarPartida();
+
+        //leemos cuantos zoombies hay
+        cuantosZombiesQuedan = GameObject.Find("zombies").transform.childCount;
     }
 
     // Update is called once per frame
@@ -87,7 +99,7 @@ public class script_personaje : MonoBehaviour
             if (mira.transform.position.x < transform.position.x) transform.localScale = new Vector3(-1, 1, 1);
             if (mira.transform.position.x > transform.position.x) transform.localScale = new Vector3(1, 1, 1);
         }
-        else { 
+        else {
             if (movX < 0) transform.localScale = new Vector3(-1, 1, 1);
             if (movX > 0) transform.localScale = new Vector3(1, 1, 1);
         }
@@ -105,9 +117,9 @@ public class script_personaje : MonoBehaviour
 
             mira.gameObject.SetActive(miraValida);
 
-            if (Input.GetButtonDown("Fire1") && miraValida){
-                if(cantBalas > 0) disparar();
-                else{
+            if (Input.GetButtonDown("Fire1") && miraValida) {
+                if (cantBalas > 0) disparar();
+                else {
                     //avisar que no tiene balas
                     textoContBalas.color = Color.red;
                     textoContBalas.fontSize = 50;
@@ -115,11 +127,19 @@ public class script_personaje : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.P)) cargarPartida(); 
-        if (Input.GetKeyDown(KeyCode.O)) guardarPartida();
+        if (Input.GetKeyDown(KeyCode.P)) SceneManager.LoadScene(escenaActual());
+        if (Input.GetKeyDown(KeyCode.O)) SceneManager.LoadScene(escenaActual() + 1);
 
         //cantidad de balas
         textoContBalas.text = cantBalas.ToString();
+
+        //chequear si es hora de pasar de nivel
+        if (Time.time > momInicioFadeOut)
+        {
+            iniciarFadeOut();
+            momInicioFadeOut = float.MaxValue;
+        }
+          
     }
 
     void guardarPartida(){
@@ -221,6 +241,17 @@ public class script_personaje : MonoBehaviour
                     //le dio en la cabeza a un zombie
                     hit.transform.GetComponent<script_zombie>().muere(direccion);
                     Instantiate(particulasMuchaSangreVerde, hit.point, Quaternion.identity);
+
+                    cuantosZombiesQuedan--;
+                    if(cuantosZombiesQuedan == 0)
+                    {
+                        Debug.Log("mataste todos los zombies");
+                        //mostrar el cartel
+                        textoFinal.SetActive(true);
+                        momInicioFadeOut = Time.time + 3f;
+                        escenaACargarDespuesDelFadeOut = escenaActual() + 1;
+                        
+                    }
                 }
             }
         }
@@ -278,11 +309,19 @@ public class script_personaje : MonoBehaviour
         telaNegra.color = new Color(0, 0, 0, valorAlfa);
 
         //Reinicar escena cuando se complete el fadeout
-        if (valorAlfa > 0.9f && valorAlfaDeseadoTelaNegra == 1) SceneManager.LoadScene("SampleScene");
+        if (valorAlfa > 0.9f && valorAlfaDeseadoTelaNegra == 1)
+        {
+            SceneManager.LoadScene(escenaACargarDespuesDelFadeOut);
+        }
 
         //vuelve el contador de balas a su estilo normal
         textoContBalas.color = Color.Lerp(textoContBalas.color, Color.white, .1f);
         textoContBalas.fontSize = Mathf.Lerp(textoContBalas.fontSize, 36, .1f);
+    }
+
+    int escenaActual()
+    {
+        return SceneManager.GetActiveScene().buildIndex;
     }
 
     void actualizarDisplay(){
@@ -306,6 +345,7 @@ public class script_personaje : MonoBehaviour
 
             //Comienza el proceso de muerte
             anim.SetTrigger("muere");
+            escenaACargarDespuesDelFadeOut = escenaActual();
         }else{
 
         Debug.Log("auch! ahora tengo " + energiaActual + " de " + energiaMax);
