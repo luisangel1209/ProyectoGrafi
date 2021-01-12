@@ -237,7 +237,7 @@ public class script_personaje : MonoBehaviour
             }
             if (hit.collider.gameObject.CompareTag("cabezazombie"))
             {
-                if(hit.transform.GetComponent<script_zombie>().vivo){
+                //if(hit.transform.GetComponent<script_zombie>().vivo){
                     //le dio en la cabeza a un zombie
                     hit.transform.GetComponent<script_zombie>().muere(direccion);
                     Instantiate(particulasMuchaSangreVerde, hit.point, Quaternion.identity);
@@ -252,7 +252,7 @@ public class script_personaje : MonoBehaviour
                         escenaACargarDespuesDelFadeOut = escenaActual() + 1;
                         
                     }
-                }
+                //}
             }
         }
         //restar municion
